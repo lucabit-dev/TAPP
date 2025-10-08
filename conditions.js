@@ -4,7 +4,7 @@ const path = require('path');
 class ConditionsService {
   constructor() {
     this.conditionNames = {
-      macd5mPositive: 'MACD (5m) > 0',
+      macd5mPositive: 'MACD Histogram (5m) > 0',
       ema18Above200_1m: 'EMA 18 (1m) > EMA 200 (1m)',
       priceAboveVwap: 'Precio > VWAP (1m)'
     };
@@ -41,12 +41,12 @@ class ConditionsService {
     return (a - b) > tolerance;
   }
 
-  // Helper method to extract MACD value
-  getMACDValue(macdData) {
+  // Helper method to extract MACD histogram value
+  getMACDHistogram(macdData) {
     if (!macdData || typeof macdData !== 'object') {
       return null;
     }
-    return macdData.macd || null;
+    return macdData.histogram || null;
   }
 
   evaluateConditions(indicatorData) {
@@ -67,21 +67,20 @@ class ConditionsService {
       lastCandleClose: lastCandle?.close
     });
 
-    // Extract MACD values properly
-    const macd1mValue = this.getMACDValue(indicators.macd1m);
-    const macd5mValue = this.getMACDValue(indicators.macd5m);
+    // Extract MACD histogram value for 5m
+    const macd5mHistogram = this.getMACDHistogram(indicators.macd5m);
     
     // Use currentPrice if available, otherwise fall back to lastCandle.close
     const closePrice = currentPrice || lastCandle?.close;
 
-    // Condition 1: MACD (5m) > 0
-    conditions.macd5mPositive = this.isGreaterThan(macd5mValue, 0);
-    console.log(`✅ Condition 1 - MACD (5m) > 0: ${conditions.macd5mPositive ? 'PASS' : 'FAIL'} (${macd5mValue})`);
+    // Condition 1: MACD Histogram (5m) > 0
+    conditions.macd5mPositive = this.isGreaterThan(macd5mHistogram, 0);
+    console.log(`✅ Condition 1 - MACD Histogram (5m) > 0: ${conditions.macd5mPositive ? 'PASS' : 'FAIL'} (${macd5mHistogram})`);
     if (!conditions.macd5mPositive) {
       failedConditions.push({
         name: this.conditionNames.macd5mPositive,
         expected: '> 0',
-        actual: macd5mValue || 'N/A',
+        actual: macd5mHistogram || 'N/A',
         condition: 'macd5mPositive'
       });
     }
