@@ -22,11 +22,5 @@
       "src": "/(.*)",
       "dest": "client/dist/$1"
     }
-  ],
-  "env": {
-    "POLYGON_API_KEY": "@polygon-api-key",
-    "CHARTSWATCHER_USER_ID": "@chartswatcher-user-id",
-    "CHARTSWATCHER_API_KEY": "@chartswatcher-api-key",
-    "CHARTSWATCHER_CONFIG_ID": "@chartswatcher-config-id"
-  }
+  ]
 }
