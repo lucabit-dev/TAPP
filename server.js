@@ -908,20 +908,22 @@ app.use((req, res) => {
   });
 });
 
-// Start server
-server.listen(PORT, () => {
-  console.log(`🚀 Trading Alerts API server running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`📈 Alerts endpoint: http://localhost:${PORT}/api/alerts`);
-  console.log(`✅ Valid alerts: http://localhost:${PORT}/api/alerts/valid`);
-  console.log(`❌ Filtered alerts: http://localhost:${PORT}/api/alerts/filtered`);
-  console.log(`🔌 ChartsWatcher status: http://localhost:${PORT}/api/chartswatcher/status`);
-  console.log(`📋 Toplist endpoint: http://localhost:${PORT}/api/toplist`);
-  console.log(`📊 Toplist status: http://localhost:${PORT}/api/toplist/status`);
-  console.log(`🔍 Manual analysis: http://localhost:${PORT}/api/analyze/{SYMBOL}`);
-  console.log(`📊 Condition stats: http://localhost:${PORT}/api/statistics/conditions`);
-  console.log(`🌐 WebSocket server: ws://localhost:${PORT}`);
-});
+// Start server (only if not running in Vercel serverless environment)
+if (process.env.VERCEL !== '1') {
+  server.listen(PORT, () => {
+    console.log(`🚀 Trading Alerts API server running on port ${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`📈 Alerts endpoint: http://localhost:${PORT}/api/alerts`);
+    console.log(`✅ Valid alerts: http://localhost:${PORT}/api/alerts/valid`);
+    console.log(`❌ Filtered alerts: http://localhost:${PORT}/api/alerts/filtered`);
+    console.log(`🔌 ChartsWatcher status: http://localhost:${PORT}/api/chartswatcher/status`);
+    console.log(`📋 Toplist endpoint: http://localhost:${PORT}/api/toplist`);
+    console.log(`📊 Toplist status: http://localhost:${PORT}/api/toplist/status`);
+    console.log(`🔍 Manual analysis: http://localhost:${PORT}/api/analyze/{SYMBOL}`);
+    console.log(`📊 Condition stats: http://localhost:${PORT}/api/statistics/conditions`);
+    console.log(`🌐 WebSocket server: ws://localhost:${PORT}`);
+  });
+}
 
 // Graceful shutdown
 process.on('SIGINT', () => {
