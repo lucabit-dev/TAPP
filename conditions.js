@@ -156,8 +156,7 @@ class ConditionsService {
       failedConditions,
       score: `${passedConditions}/${totalConditions}`,
       debugInfo: {
-        macd1mValue,
-        macd5mValue,
+        macd5mHistogram,
         closePrice,
         allIndicatorValues: {
           ema1m18: indicators.ema1m18,
