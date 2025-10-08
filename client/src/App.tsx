@@ -452,17 +452,6 @@ function App() {
     return value.toFixed(decimals);
   };
 
-  const getFilteredAlerts = () => {
-    switch (selectedTab) {
-      case 'valid':
-        return allAlerts.filter(alert => alert.evaluation.allConditionsMet);
-      case 'filtered':
-        return allAlerts.filter(alert => !alert.evaluation.allConditionsMet);
-      default:
-        return allAlerts;
-    }
-  };
-
   // Apply additional filters to valid alerts
   const applyAdditionalFilters = (alerts: Alert[]) => {
     if (!additionalFilters.vwapAboveEma200 && !additionalFilters.vwapAboveEma18) {
@@ -497,6 +486,17 @@ function App() {
   const baseValidAlerts = allAlerts.filter(alert => alert.evaluation.allConditionsMet);
   const validAlerts = applyAdditionalFilters(baseValidAlerts);
   const filteredAlerts = allAlerts.filter(alert => !alert.evaluation.allConditionsMet);
+
+  const getFilteredAlerts = () => {
+    switch (selectedTab) {
+      case 'valid':
+        return validAlerts; // Use validAlerts with additional filters applied
+      case 'filtered':
+        return filteredAlerts;
+      default:
+        return allAlerts;
+    }
+  };
 
   return (
     <div className="h-screen bg-[#1e1e1e] text-[#cccccc] flex flex-col overflow-hidden">

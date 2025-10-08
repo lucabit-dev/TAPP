@@ -562,17 +562,14 @@ app.get('/api/alerts/processed', async (req, res) => {
     const alerts = await chartsWatcherService.fetchAlerts();
     console.log(`Processing ${alerts.length} alerts...`);
     
-    // Create real stock alerts with live market data
-    const realStockAlerts = await createRealStockAlerts();
+    // Create real stock alerts with live market data (only if no real alerts)
+    const realStockAlerts = alerts.length > 0 ? [] : await createRealStockAlerts();
     
-    // Create 3 forced valid alerts with real market data
-    const forcedValidAlerts = await createForcedValidAlerts();
-    
-    // Combine all alerts: real alerts + forced valid alerts + regular stock alerts
+    // Combine all alerts
     const alertsToProcess = alerts.length > 0 
-      ? [...alerts, ...forcedValidAlerts] 
-      : [...realStockAlerts, ...forcedValidAlerts];
-    console.log(`Processing ${alertsToProcess.length} alerts (${alerts.length} real ChartsWatcher alerts + ${realStockAlerts.length} real stock alerts + ${forcedValidAlerts.length} forced valid alerts)...`);
+      ? alerts 
+      : realStockAlerts;
+    console.log(`Processing ${alertsToProcess.length} alerts (${alerts.length} real ChartsWatcher alerts + ${realStockAlerts.length} real stock alerts)...`);
     
     if (alertsToProcess.length === 0) {
       return res.json({
