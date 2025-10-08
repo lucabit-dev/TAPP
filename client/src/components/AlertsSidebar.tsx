@@ -162,13 +162,13 @@ const AlertsSidebar: React.FC<AlertsSidebarProps> = ({
                 {/* Key Indicators */}
                 <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
                   <div className="text-[#969696]">
-                    MACD 1m: <span className={`font-mono ${alert.indicators.macd1m && alert.indicators.macd1m.histogram >= 0 ? 'text-[#4ec9b0]' : 'text-[#f44747]'}`}>
-                      {alert.indicators.macd1m ? alert.indicators.macd1m.histogram.toFixed(4) : 'N/A'}
+                    MACD 1m: <span className={`font-mono ${alert.indicators.macd1m && alert.indicators.macd1m.macd >= 0 ? 'text-[#4ec9b0]' : 'text-[#f44747]'}`}>
+                      {alert.indicators.macd1m ? alert.indicators.macd1m.macd.toFixed(4) : 'N/A'}
                     </span>
                   </div>
                   <div className="text-[#969696]">
-                    MACD 5m: <span className={`font-mono ${alert.indicators.macd5m && alert.indicators.macd5m.histogram >= 0 ? 'text-[#4ec9b0]' : 'text-[#f44747]'}`}>
-                      {alert.indicators.macd5m ? alert.indicators.macd5m.histogram.toFixed(4) : 'N/A'}
+                    MACD 5m: <span className={`font-mono ${alert.indicators.macd5m && alert.indicators.macd5m.macd >= 0 ? 'text-[#4ec9b0]' : 'text-[#f44747]'}`}>
+                      {alert.indicators.macd5m ? alert.indicators.macd5m.macd.toFixed(4) : 'N/A'}
                     </span>
                   </div>
                 </div>

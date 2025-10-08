@@ -925,19 +925,19 @@ function App() {
                         </div>
                         <div className="bg-indigo-900/30 rounded-xl p-4 border border-indigo-500/30">
                           <div className={`text-sm font-mono font-bold ${
-                            manualAnalysis.indicators.macd1m && manualAnalysis.indicators.macd1m.histogram >= 0 
+                            manualAnalysis.indicators.macd1m && manualAnalysis.indicators.macd1m.macd >= 0 
                               ? 'text-green-300' : 'text-red-300'
                           }`}>
-                            {manualAnalysis.indicators.macd1m ? formatIndicator(manualAnalysis.indicators.macd1m.histogram) : 'N/A'}
+                            {manualAnalysis.indicators.macd1m ? formatIndicator(manualAnalysis.indicators.macd1m.macd) : 'N/A'}
                           </div>
                           <div className="text-indigo-400/60 text-xs mt-1">MACD 1m</div>
                         </div>
                         <div className="bg-teal-900/30 rounded-xl p-4 border border-teal-500/30">
                           <div className={`text-sm font-mono font-bold ${
-                            manualAnalysis.indicators.macd5m && manualAnalysis.indicators.macd5m.histogram >= 0 
+                            manualAnalysis.indicators.macd5m && manualAnalysis.indicators.macd5m.macd >= 0 
                               ? 'text-green-300' : 'text-red-300'
                           }`}>
-                            {manualAnalysis.indicators.macd5m ? formatIndicator(manualAnalysis.indicators.macd5m.histogram) : 'N/A'}
+                            {manualAnalysis.indicators.macd5m ? formatIndicator(manualAnalysis.indicators.macd5m.macd) : 'N/A'}
                           </div>
                           <div className="text-teal-400/60 text-xs mt-1">MACD 5m</div>
                         </div>
@@ -1095,20 +1095,20 @@ function App() {
                         {/* MACD 1m */}
                         <div className="col-span-1">
                           <div className={`text-xs font-mono ${
-                            alert.indicators.macd1m && alert.indicators.macd1m.histogram >= 0 
+                            alert.indicators.macd1m && alert.indicators.macd1m.macd >= 0 
                               ? 'text-[#4ec9b0]' : 'text-[#f44747]'
                           }`}>
-                            {alert.indicators.macd1m ? formatIndicator(alert.indicators.macd1m.histogram) : 'N/A'}
+                            {alert.indicators.macd1m ? formatIndicator(alert.indicators.macd1m.macd) : 'N/A'}
                           </div>
                         </div>
 
                         {/* MACD 5m */}
                         <div className="col-span-1">
                           <div className={`text-xs font-mono ${
-                            alert.indicators.macd5m && alert.indicators.macd5m.histogram >= 0 
+                            alert.indicators.macd5m && alert.indicators.macd5m.macd >= 0 
                               ? 'text-[#4ec9b0]' : 'text-[#f44747]'
                           }`}>
-                            {alert.indicators.macd5m ? formatIndicator(alert.indicators.macd5m.histogram) : 'N/A'}
+                            {alert.indicators.macd5m ? formatIndicator(alert.indicators.macd5m.macd) : 'N/A'}
                           </div>
                         </div>
 
