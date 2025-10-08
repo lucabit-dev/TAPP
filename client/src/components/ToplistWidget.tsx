@@ -13,11 +13,12 @@ interface ToplistRow {
   columns: ToplistColumn[];
 }
 
-interface ToplistUpdate {
-  "@type": "ToplistUpdate";
-  config_id: string;
-  rows: ToplistRow[];
-}
+// Removed unused interface - keeping for reference if needed later
+// interface ToplistUpdate {
+//   "@type": "ToplistUpdate";
+//   config_id: string;
+//   rows: ToplistRow[];
+// }
 
 interface ToplistWidgetProps {
   height?: string;
@@ -28,7 +29,7 @@ interface ToplistWidgetProps {
 const ToplistWidget: React.FC<ToplistWidgetProps> = ({
   height = "400px",
   theme = "dark",
-  showHeader = true
+  // showHeader prop available but not currently used in render
 }) => {
   const [toplistData, setToplistData] = React.useState<ToplistRow[]>([]);
   const [isConnected, setIsConnected] = React.useState(false);
@@ -133,20 +134,21 @@ const ToplistWidget: React.FC<ToplistWidgetProps> = ({
     return columnWidths[key] || 'col-span-1';
   };
 
-  const getColumnValue = (columns: ToplistColumn[], key: string): string => {
-    const column = columns.find(col => col.key === key);
-    return column ? column.value : 'N/A';
-  };
+  // Utility functions - commented out as not currently used but kept for reference
+  // const getColumnValue = (columns: ToplistColumn[], key: string): string => {
+  //   const column = columns.find(col => col.key === key);
+  //   return column ? column.value : 'N/A';
+  // };
 
-  const getColumnColor = (columns: ToplistColumn[], key: string): string => {
-    const column = columns.find(col => col.key === key);
-    return column ? column.color : '#333333';
-  };
+  // const getColumnColor = (columns: ToplistColumn[], key: string): string => {
+  //   const column = columns.find(col => col.key === key);
+  //   return column ? column.color : '#333333';
+  // };
 
-  const getColumnTextColor = (columns: ToplistColumn[], key: string): string => {
-    const column = columns.find(col => col.key === key);
-    return column ? column.text_color : '#ffffff';
-  };
+  // const getColumnTextColor = (columns: ToplistColumn[], key: string): string => {
+  //   const column = columns.find(col => col.key === key);
+  //   return column ? column.text_color : '#ffffff';
+  // };
 
   // Improved text color with better contrast
   const getReadableTextColor = (originalColor: string, backgroundColor: string): string => {
