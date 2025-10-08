@@ -100,6 +100,10 @@ function App() {
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const [showStockInfoModal, setShowStockInfoModal] = useState(false);
   const [selectedStockInfo, setSelectedStockInfo] = useState<any>(null);
+  const [additionalFilters, setAdditionalFilters] = useState({
+    vwapAboveEma200: false,
+    vwapAboveEma18: false
+  });
   const alertsEndRef = useRef<HTMLDivElement>(null);
   const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -459,7 +463,39 @@ function App() {
     }
   };
 
-  const validAlerts = allAlerts.filter(alert => alert.evaluation.allConditionsMet);
+  // Apply additional filters to valid alerts
+  const applyAdditionalFilters = (alerts: Alert[]) => {
+    if (!additionalFilters.vwapAboveEma200 && !additionalFilters.vwapAboveEma18) {
+      return alerts;
+    }
+
+    return alerts.filter(alert => {
+      let passesFilters = true;
+
+      // Check VWAP > EMA 200 (1m)
+      if (additionalFilters.vwapAboveEma200) {
+        const vwap = alert.indicators.vwap1m;
+        const ema200 = alert.indicators.ema1m200;
+        if (!vwap || !ema200 || vwap <= ema200) {
+          passesFilters = false;
+        }
+      }
+
+      // Check VWAP > EMA 18 (1m)
+      if (additionalFilters.vwapAboveEma18) {
+        const vwap = alert.indicators.vwap1m;
+        const ema18 = alert.indicators.ema1m18;
+        if (!vwap || !ema18 || vwap <= ema18) {
+          passesFilters = false;
+        }
+      }
+
+      return passesFilters;
+    });
+  };
+
+  const baseValidAlerts = allAlerts.filter(alert => alert.evaluation.allConditionsMet);
+  const validAlerts = applyAdditionalFilters(baseValidAlerts);
   const filteredAlerts = allAlerts.filter(alert => !alert.evaluation.allConditionsMet);
 
   return (
@@ -987,10 +1023,12 @@ function App() {
         ) : selectedTab === 'testlist' ? (
           <TestListSection />
         ) : (
-          <div className="h-full flex flex-col">
-            {/* Clean Table Header */}
-            <div className="bg-[#252526] border-b border-[#3e3e42] px-6 py-3 sticky top-0 z-10">
-              <div className="grid grid-cols-12 gap-4 text-xs font-medium text-[#969696] uppercase tracking-wide">
+          <div className="h-full flex">
+            {/* Main Alerts Content */}
+            <div className="flex-1 flex flex-col">
+              {/* Clean Table Header */}
+              <div className="bg-[#252526] border-b border-[#3e3e42] px-6 py-3 sticky top-0 z-10">
+                <div className="grid grid-cols-12 gap-4 text-xs font-medium text-[#969696] uppercase tracking-wide">
                 <div className="col-span-2 flex items-center space-x-2">
                   <span>Symbol</span>
                 </div>
@@ -1142,6 +1180,96 @@ function App() {
                   <div ref={alertsEndRef} />
                 </div>
               )}
+            </div>
+            </div>
+
+            {/* Filters Sidebar */}
+            <div className="w-64 bg-[#252526] border-l border-[#3e3e42] p-4 overflow-y-auto">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-[#cccccc] mb-3 uppercase tracking-wide flex items-center">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filtros Adicionales
+                  </h3>
+                  <div className="text-xs text-[#969696] mb-4">
+                    Aplicar condiciones extra a las alertas válidas
+                  </div>
+                </div>
+
+                {/* Filter Options */}
+                <div className="space-y-3">
+                  {/* VWAP > EMA 200 Filter */}
+                  <label className="flex items-start space-x-3 p-3 rounded-lg bg-[#2d2d30] hover:bg-[#3e3e42] cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={additionalFilters.vwapAboveEma200}
+                      onChange={(e) => setAdditionalFilters({
+                        ...additionalFilters,
+                        vwapAboveEma200: e.target.checked
+                      })}
+                      className="mt-0.5 w-4 h-4 rounded border-[#3e3e42] text-[#007acc] focus:ring-[#007acc] focus:ring-offset-0 bg-[#3e3e42]"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm text-[#cccccc] font-medium">VWAP {'>'} EMA 200</div>
+                      <div className="text-xs text-[#969696] mt-1">VWAP por sobre EMA 200 (1m)</div>
+                    </div>
+                  </label>
+
+                  {/* VWAP > EMA 18 Filter */}
+                  <label className="flex items-start space-x-3 p-3 rounded-lg bg-[#2d2d30] hover:bg-[#3e3e42] cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={additionalFilters.vwapAboveEma18}
+                      onChange={(e) => setAdditionalFilters({
+                        ...additionalFilters,
+                        vwapAboveEma18: e.target.checked
+                      })}
+                      className="mt-0.5 w-4 h-4 rounded border-[#3e3e42] text-[#007acc] focus:ring-[#007acc] focus:ring-offset-0 bg-[#3e3e42]"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm text-[#cccccc] font-medium">VWAP {'>'} EMA 18</div>
+                      <div className="text-xs text-[#969696] mt-1">VWAP por sobre EMA 18 (1m)</div>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Filter Summary */}
+                <div className="mt-6 p-3 bg-[#1e1e1e] rounded-lg border border-[#3e3e42]">
+                  <div className="text-xs font-medium text-[#969696] mb-2">Resumen</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-[#969696]">Alertas base:</span>
+                      <span className="text-[#cccccc] font-mono">{baseValidAlerts.length}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-[#969696]">Filtros activos:</span>
+                      <span className="text-[#cccccc] font-mono">
+                        {(additionalFilters.vwapAboveEma200 ? 1 : 0) + (additionalFilters.vwapAboveEma18 ? 1 : 0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs pt-2 border-t border-[#3e3e42]">
+                      <span className="text-[#4ec9b0] font-medium">Alertas finales:</span>
+                      <span className="text-[#4ec9b0] font-mono font-bold">{validAlerts.length}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active Filters Info */}
+                {(additionalFilters.vwapAboveEma200 || additionalFilters.vwapAboveEma18) && (
+                  <div className="p-3 bg-[#1a3a47] border border-[#007acc]/30 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <svg className="w-4 h-4 text-[#007acc] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      <div className="text-xs text-[#79b8ff]">
+                        Filtros activos. Solo se muestran alertas que cumplan todas las condiciones seleccionadas.
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
