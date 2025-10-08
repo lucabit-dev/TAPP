@@ -5,12 +5,8 @@ class ConditionsService {
   constructor() {
     this.conditionNames = {
       macd5mPositive: 'MACD (5m) > 0',
-      macd1mPositive: 'MACD (1m) > 0',
       ema18Above200_1m: 'EMA 18 (1m) > EMA 200 (1m)',
-      ema18AboveVwap_1m: 'EMA 18 (1m) > VWAP (1m)',
-      vwapAboveEma200_1m: 'VWAP (1m) > EMA 200 (1m)',
-      closeAboveEma18_1m: 'Close > EMA 18 (1m)',
-      ema200AboveEma18_5m: 'EMA 200 (5m) > EMA 18 (5m)'
+      priceAboveVwap: 'Precio > VWAP (1m)'
     };
     
     // Statistics tracking
@@ -19,12 +15,8 @@ class ConditionsService {
       totalPassed: 0,
       conditionCounts: {
         macd5mPositive: { passed: 0, failed: 0 },
-        macd1mPositive: { passed: 0, failed: 0 },
         ema18Above200_1m: { passed: 0, failed: 0 },
-        ema18AboveVwap_1m: { passed: 0, failed: 0 },
-        vwapAboveEma200_1m: { passed: 0, failed: 0 },
-        closeAboveEma18_1m: { passed: 0, failed: 0 },
-        ema200AboveEma18_5m: { passed: 0, failed: 0 }
+        priceAboveVwap: { passed: 0, failed: 0 }
       }
     };
     
@@ -94,81 +86,29 @@ class ConditionsService {
       });
     }
 
-    // Condition 2: MACD (1m) > 0
-    conditions.macd1mPositive = this.isGreaterThan(macd1mValue, 0);
-    console.log(`✅ Condition 2 - MACD (1m) > 0: ${conditions.macd1mPositive ? 'PASS' : 'FAIL'} (${macd1mValue})`);
-    if (!conditions.macd1mPositive) {
-      failedConditions.push({
-        name: this.conditionNames.macd1mPositive,
-        expected: '> 0',
-        actual: macd1mValue || 'N/A',
-        condition: 'macd1mPositive'
-      });
-    }
-
-    // Condition 3: EMA 18 (1m) > EMA 200 (1m) - Use tolerance for EMA comparisons
+    // Condition 2: EMA 18 (1m) > EMA 200 (1m)
     conditions.ema18Above200_1m = this.isGreaterThanWithTolerance(indicators.ema1m18, indicators.ema1m200);
-    const diff3 = indicators.ema1m18 - indicators.ema1m200;
-    console.log(`✅ Condition 3 - EMA 18 (1m) > EMA 200 (1m): ${conditions.ema18Above200_1m ? 'PASS' : 'FAIL'} (${indicators.ema1m18} vs ${indicators.ema1m200}, diff: ${diff3.toFixed(6)})`);
+    const diff2 = indicators.ema1m18 - indicators.ema1m200;
+    console.log(`✅ Condition 2 - EMA 18 (1m) > EMA 200 (1m): ${conditions.ema18Above200_1m ? 'PASS' : 'FAIL'} (${indicators.ema1m18} vs ${indicators.ema1m200}, diff: ${diff2.toFixed(6)})`);
     if (!conditions.ema18Above200_1m) {
       failedConditions.push({
         name: this.conditionNames.ema18Above200_1m,
         expected: `EMA 18 (${indicators.ema1m18}) > EMA 200 (${indicators.ema1m200})`,
-        actual: `${indicators.ema1m18 || 'N/A'} vs ${indicators.ema1m200 || 'N/A'} (diff: ${diff3.toFixed(6)})`,
+        actual: `${indicators.ema1m18 || 'N/A'} vs ${indicators.ema1m200 || 'N/A'} (diff: ${diff2.toFixed(6)})`,
         condition: 'ema18Above200_1m'
       });
     }
 
-    // Condition 4: EMA 18 (1m) > VWAP (1m) - Use tolerance for EMA/VWAP comparisons
-    conditions.ema18AboveVwap_1m = this.isGreaterThanWithTolerance(indicators.ema1m18, indicators.vwap1m);
-    const diff4 = indicators.ema1m18 - indicators.vwap1m;
-    console.log(`✅ Condition 4 - EMA 18 (1m) > VWAP (1m): ${conditions.ema18AboveVwap_1m ? 'PASS' : 'FAIL'} (${indicators.ema1m18} vs ${indicators.vwap1m}, diff: ${diff4.toFixed(6)})`);
-    if (!conditions.ema18AboveVwap_1m) {
+    // Condition 3: Precio > VWAP (1m)
+    conditions.priceAboveVwap = this.isGreaterThanWithTolerance(closePrice, indicators.vwap1m);
+    const diff3 = closePrice - indicators.vwap1m;
+    console.log(`✅ Condition 3 - Precio > VWAP (1m): ${conditions.priceAboveVwap ? 'PASS' : 'FAIL'} (${closePrice} vs ${indicators.vwap1m}, diff: ${diff3.toFixed(6)})`);
+    if (!conditions.priceAboveVwap) {
       failedConditions.push({
-        name: this.conditionNames.ema18AboveVwap_1m,
-        expected: `EMA 18 (${indicators.ema1m18}) > VWAP (${indicators.vwap1m})`,
-        actual: `${indicators.ema1m18 || 'N/A'} vs ${indicators.vwap1m || 'N/A'} (diff: ${diff4.toFixed(6)})`,
-        condition: 'ema18AboveVwap_1m'
-      });
-    }
-
-    // Condition 5: VWAP (1m) > EMA 200 (1m) - Use tolerance for VWAP/EMA comparisons
-    conditions.vwapAboveEma200_1m = this.isGreaterThanWithTolerance(indicators.vwap1m, indicators.ema1m200);
-    const diff5 = indicators.vwap1m - indicators.ema1m200;
-    console.log(`✅ Condition 5 - VWAP (1m) > EMA 200 (1m): ${conditions.vwapAboveEma200_1m ? 'PASS' : 'FAIL'} (${indicators.vwap1m} vs ${indicators.ema1m200}, diff: ${diff5.toFixed(6)})`);
-    if (!conditions.vwapAboveEma200_1m) {
-      failedConditions.push({
-        name: this.conditionNames.vwapAboveEma200_1m,
-        expected: `VWAP (${indicators.vwap1m}) > EMA 200 (${indicators.ema1m200})`,
-        actual: `${indicators.vwap1m || 'N/A'} vs ${indicators.ema1m200 || 'N/A'} (diff: ${diff5.toFixed(6)})`,
-        condition: 'vwapAboveEma200_1m'
-      });
-    }
-
-    // Condition 6: Close > EMA 18 (1m) - Use tolerance for price comparisons
-    conditions.closeAboveEma18_1m = this.isGreaterThanWithTolerance(closePrice, indicators.ema1m18);
-    const diff6 = closePrice - indicators.ema1m18;
-    console.log(`✅ Condition 6 - Close > EMA 18 (1m): ${conditions.closeAboveEma18_1m ? 'PASS' : 'FAIL'} (${closePrice} vs ${indicators.ema1m18}, diff: ${diff6.toFixed(6)})`);
-    if (!conditions.closeAboveEma18_1m) {
-      failedConditions.push({
-        name: this.conditionNames.closeAboveEma18_1m,
-        expected: `Close (${closePrice}) > EMA 18 (${indicators.ema1m18})`,
-        actual: `${closePrice || 'N/A'} vs ${indicators.ema1m18 || 'N/A'} (diff: ${diff6.toFixed(6)})`,
-        condition: 'closeAboveEma18_1m'
-      });
-    }
-
-    // Condition 7: EMA 200 (5m) > EMA 18 (5m) - CRITICAL: Verify these are from 5m candles
-    conditions.ema200AboveEma18_5m = this.isGreaterThanWithTolerance(indicators.ema5m200, indicators.ema5m18);
-    const diff7 = indicators.ema5m200 - indicators.ema5m18;
-    console.log(`✅ Condition 7 - EMA 200 (5m) > EMA 18 (5m): ${conditions.ema200AboveEma18_5m ? 'PASS' : 'FAIL'} (${indicators.ema5m200} vs ${indicators.ema5m18}, diff: ${diff7.toFixed(6)})`);
-    console.log(`🔍 EMA 5m Debug: EMA200=${indicators.ema5m200}, EMA18=${indicators.ema5m18} (calculated from 5m candles)`);
-    if (!conditions.ema200AboveEma18_5m) {
-      failedConditions.push({
-        name: this.conditionNames.ema200AboveEma18_5m,
-        expected: `EMA 200 (${indicators.ema5m200}) > EMA 18 (${indicators.ema5m18})`,
-        actual: `${indicators.ema5m200 || 'N/A'} vs ${indicators.ema5m18 || 'N/A'} (diff: ${diff7.toFixed(6)})`,
-        condition: 'ema200AboveEma18_5m'
+        name: this.conditionNames.priceAboveVwap,
+        expected: `Precio (${closePrice}) > VWAP (${indicators.vwap1m})`,
+        actual: `${closePrice || 'N/A'} vs ${indicators.vwap1m || 'N/A'} (diff: ${diff3.toFixed(6)})`,
+        condition: 'priceAboveVwap'
       });
     }
 
